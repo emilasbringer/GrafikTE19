@@ -1,8 +1,11 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * This is a class
@@ -19,12 +22,16 @@ public class Grafik extends Canvas implements Runnable{
     private boolean isRunning;
 
     private BufferStrategy bs;
-    //private BufferedImage image;
 
     private int houseX, houseY;
     private int houseVX, houseVY;
 
-    private int treeX, treeY;
+    private int treeX, treeY, treeVX, treeVY;
+
+    private int marioX, marioY, marioVX, marioVY;
+
+    private BufferedImage mario;
+
 
     public Grafik() {
         JFrame frame = new JFrame("A simple painting");
@@ -37,6 +44,12 @@ public class Grafik extends Canvas implements Runnable{
 
         isRunning = false;
 
+        try {
+            mario = ImageIO.read(new File("supermario.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         houseX = 300;
         houseY = 150;
         houseVX = 1;
@@ -44,6 +57,13 @@ public class Grafik extends Canvas implements Runnable{
 
         treeX = 200;
         treeY = 200;
+        treeVX = 0;
+        treeVY = 0;
+
+        marioX = 0;
+        marioY = 0;
+        marioVX = 4;
+        marioVY = 4;
     }
 
     public void update() {
@@ -54,6 +74,14 @@ public class Grafik extends Canvas implements Runnable{
         if (houseX < 0 ) {
             houseVX = 1;
         }
+        marioX += marioVX;
+        marioY += marioVY;
+        if (marioX < 0 || marioX > width-80)
+            marioVX = -marioVX;
+        if (marioY < 0 || marioY > height-80)
+            marioVY = -marioVY;
+        treeX += treeVX;
+        treeY += treeVY;
     }
 
     public void draw() {
@@ -75,6 +103,7 @@ public class Grafik extends Canvas implements Runnable{
         drawTree(g, 130,200);
         drawTree(g, 140,200);
         drawTree(g, 150,200);
+        g.drawImage(mario,marioX,marioY,80,80,null);
         g.dispose();
         bs.show();
     }
@@ -147,22 +176,33 @@ public class Grafik extends Canvas implements Runnable{
         @Override
         public void keyPressed(KeyEvent keyEvent) {
             if (keyEvent.getKeyChar() == 'a') {
-                treeX -= 5;
+                treeVX = -5;
             }
             if (keyEvent.getKeyChar() == 'd') {
-                treeX += 5;
+                treeVX = 5;
             }
             if (keyEvent.getKeyChar() == 'w') {
-                treeY -= 5;
+                treeVY = -5;
             }
             if (keyEvent.getKeyChar() == 's') {
-                treeY += 5;
+                treeVY = 5;
             }
         }
 
         @Override
         public void keyReleased(KeyEvent keyEvent) {
-
+            if (keyEvent.getKeyChar() == 'a') {
+                treeVX = 0;
+            }
+            if (keyEvent.getKeyChar() == 'd') {
+                treeVX = 0;
+            }
+            if (keyEvent.getKeyChar() == 'w') {
+                treeVY = 0;
+            }
+            if (keyEvent.getKeyChar() == 's') {
+                treeVY = 0;
+            }
         }
     }
 
@@ -198,7 +238,7 @@ public class Grafik extends Canvas implements Runnable{
 
         @Override
         public void mouseDragged(MouseEvent mouseEvent) {
-            
+
         }
 
         @Override
