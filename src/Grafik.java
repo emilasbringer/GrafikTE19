@@ -14,8 +14,8 @@ import java.io.IOException;
  * @author Magnus Silverdal
  */
 public class Grafik extends Canvas implements Runnable{
-    private int width = 800;
-    private int height = 600;
+    private int width = 1920;
+    private int height = 1080;
 
     private Thread thread;
     int fps = 30;
@@ -23,18 +23,19 @@ public class Grafik extends Canvas implements Runnable{
 
     private BufferStrategy bs;
 
-    private int houseX, houseY;
-    private int houseVX, houseVY;
+    private int YH = 100;
 
-    private int treeX, treeY, treeVX, treeVY;
+    private int paddle1X, paddle1Y, paddle1VX, paddle1VY;
 
-    private int marioX, marioY, marioVX, marioVY;
+    private int paddle2X, paddle2Y, paddle2VX, paddle2VY;
 
-    private BufferedImage mario;
+    private int pongballX, pongballY, pongballVX, pongballVY;
+
+    private BufferedImage pongball;
 
 
     public Grafik() {
-        JFrame frame = new JFrame("A simple painting");
+        JFrame frame = new JFrame("CHICKENDEATHPONG");
         this.setSize(width,height);
         frame.add(this);
         frame.pack();
@@ -45,43 +46,56 @@ public class Grafik extends Canvas implements Runnable{
         isRunning = false;
 
         try {
-            mario = ImageIO.read(new File("supermario.png"));
+            pongball = ImageIO.read(new File("unnamed.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        houseX = 300;
-        houseY = 150;
-        houseVX = 1;
-        houseVY = 0;
+        paddle1X = 20;
+        paddle1Y = 200;
+        paddle1VX = 0;
+        paddle1VY = 0;
 
-        treeX = 200;
-        treeY = 200;
-        treeVX = 0;
-        treeVY = 0;
+        paddle2X = 1100;
+        paddle2Y = 200;
+        paddle2VX = 0;
+        paddle2VY = 0;
 
-        marioX = 0;
-        marioY = 0;
-        marioVX = 4;
-        marioVY = 4;
+        pongballX = 0;
+        pongballY = 0;
+        pongballVX = 4;
+        pongballVY = 4;
     }
 
     public void update() {
-        houseX += houseVX;
-        if (houseX > width){
-            houseVX = -1;
+        pongballX += pongballVX;
+        pongballY += pongballVY;
+        if (pongballX < 0) {
+            pongballVX = 0;
+            pongballVY = 0;
+            System.out.println("Player 1 lost");
         }
-        if (houseX < 0 ) {
-            houseVX = 1;
+
+        if (pongballX > width-80) {
+            pongballVX = 0;
+            pongballVY = 0;
+            System.out.println("Player 2 lost");
         }
-        marioX += marioVX;
-        marioY += marioVY;
-        if (marioX < 0 || marioX > width-80)
-            marioVX = -marioVX;
-        if (marioY < 0 || marioY > height-80)
-            marioVY = -marioVY;
-        treeX += treeVX;
-        treeY += treeVY;
+
+        if (pongballY < 0 || pongballY > height-80) {
+            pongballVY = -pongballVY;
+            paddle1X += paddle1VX;
+            paddle1Y += paddle1VY;
+        }
+
+        if (pongballX > width-140 & pongballY > paddle2Y & pongballY < (paddle2Y + YH)) {
+            pongballVX = -pongballVX;
+        }
+
+        if (pongballX < width+20 & pongballY > paddle1Y & pongballY < (paddle1Y + YH)) {
+            pongballVX = -pongballVX;
+        }
+
     }
 
     public void draw() {
@@ -95,39 +109,25 @@ public class Grafik extends Canvas implements Runnable{
         update();
         g.setColor(Color.WHITE);
         g.fillRect(0,0,width,height);
-        drawHouse(g, houseX,houseY);
-        drawTree(g, treeX,treeY);
-        drawTree(g, 100,200);
-        drawTree(g, 110,200);
-        drawTree(g, 120,200);
-        drawTree(g, 130,200);
-        drawTree(g, 140,200);
-        drawTree(g, 150,200);
-        g.drawImage(mario,marioX,marioY,80,80,null);
+        drawpaddle1(g, paddle1X,paddle1Y);
+        drawpaddle2(g, paddle2X,paddle2Y);
+        g.drawImage(pongball,pongballX,pongballY,80,80,null);
         g.dispose();
         bs.show();
     }
 
-    private void drawTree(Graphics g, int x, int y) {
-        g.setColor(new Color(0,128,0));
+    private void drawpaddle1(Graphics g, int x, int y) {
+        g.setColor(new Color(0,0,0));
         int[] xs = {0+x, 10+x, 20+x};
         int[] ys = {30+y,0+y,30+y};
-        g.fillPolygon(xs,ys,3);
-        g.setColor(new Color(200,128,30));
-        g.fillRect(7+x,30+y,6,10);
+        g.fillRect(7+x,YH+y,6,100);
     }
 
-    private void drawHouse(Graphics g, int x, int y) {
-        g.setColor(new Color(0xAA1111));
-        g.fillRect(x, y-40, 50, 40);
-        g.setColor(new Color(0x444444));
-        int[] xcoords = {x-5, x + 25, x + 55};
-        int[] ycoords = {y-40, y - 65, y-40};
-        g.fillPolygon(xcoords, ycoords, 3);
-        g.fillRect(x+4,y-35,15,35);
-        g.drawRect(x+25,y-30,20,20);
-        g.setColor(new Color(0xFFA3DCFA));
-        g.fillRect(x+26,y-29,18,18);
+    private void drawpaddle2(Graphics g, int x, int y) {
+        g.setColor(new Color(0,0,0));
+        int[] xs = {0+x, 10+x, 20+x};
+        int[] ys = {30+y,0+y,30+y};
+        g.fillRect(750+x,YH+y,6,100);
     }
 
     public static void main(String[] args) {
@@ -175,33 +175,21 @@ public class Grafik extends Canvas implements Runnable{
 
         @Override
         public void keyPressed(KeyEvent keyEvent) {
-            if (keyEvent.getKeyChar() == 'a') {
-                treeVX = -5;
-            }
-            if (keyEvent.getKeyChar() == 'd') {
-                treeVX = 5;
-            }
             if (keyEvent.getKeyChar() == 'w') {
-                treeVY = -5;
+                paddle1VY = -5;
             }
             if (keyEvent.getKeyChar() == 's') {
-                treeVY = 5;
+                paddle1VY = 5;
             }
         }
 
         @Override
         public void keyReleased(KeyEvent keyEvent) {
-            if (keyEvent.getKeyChar() == 'a') {
-                treeVX = 0;
-            }
-            if (keyEvent.getKeyChar() == 'd') {
-                treeVX = 0;
-            }
             if (keyEvent.getKeyChar() == 'w') {
-                treeVY = 0;
+                paddle1VY = 0;
             }
             if (keyEvent.getKeyChar() == 's') {
-                treeVY = 0;
+                paddle1VY = 0;
             }
         }
     }
