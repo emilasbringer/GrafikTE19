@@ -70,6 +70,8 @@ public class Grafik extends Canvas implements Runnable{
     public void update() {
         pongballX += pongballVX;
         pongballY += pongballVY;
+        paddle1Y += paddle1VY;
+        paddle2Y += paddle2VY;
         if (pongballX < 0) {
             pongballVX = 0;
             pongballVY = 0;
@@ -89,11 +91,11 @@ public class Grafik extends Canvas implements Runnable{
         }
 
         if (pongballX > width-140 & pongballY > paddle2Y & pongballY < (paddle2Y + YH)) {
-            pongballVX = -pongballVX;
+            pongballX = -pongballX;
         }
 
         if (pongballX < width+20 & pongballY > paddle1Y & pongballY < (paddle1Y + YH)) {
-            pongballVX = -pongballVX;
+            pongballX = -pongballX;
         }
 
     }
