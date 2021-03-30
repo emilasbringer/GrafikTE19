@@ -31,6 +31,8 @@ public class Grafik extends Canvas implements Runnable{
 
     private int pongballX, pongballY, pongballVX, pongballVY;
 
+    private boolean touchcheck = false, death = false;
+
     private BufferedImage pongball;
 
 
@@ -62,7 +64,7 @@ public class Grafik extends Canvas implements Runnable{
         paddle2VY = 0;
 
         pongballX = 0;
-        pongballY = 0;
+        pongballY = 10;
         pongballVX = 4;
         pongballVY = 4;
     }
@@ -72,30 +74,42 @@ public class Grafik extends Canvas implements Runnable{
         pongballY += pongballVY;
         paddle1Y += paddle1VY;
         paddle2Y += paddle2VY;
+
+        //Player 1 death
         if (pongballX < 0) {
             pongballVX = 0;
             pongballVY = 0;
-            System.out.println("Player 1 lost");
+            pongballX = 1000;
+            pongballY = 500;
+            death = true;
         }
 
-        if (pongballX > width-80) {
+        //Player 2 death
+        if (pongballX > width-10) {
             pongballVX = 0;
-            pongballVY = 0;
-            System.out.println("Player 2 lost");
+            pongballVY = 0;;
+            pongballX = 1000;
+            pongballY = 500;
+            death = true;
         }
 
-        if (pongballY < 0 || pongballY > height-80) {
+        //bounce ceiling and floor
+        if (pongballY < 80 || pongballY > height-80) {
             pongballVY = -pongballVY;
             paddle1X += paddle1VX;
             paddle1Y += paddle1VY;
         }
 
-        if (pongballX > width-140 & pongballY > paddle2Y & pongballY < (paddle2Y + YH)) {
+        //Player 2 returnball
+        if (pongballX > paddle2X & pongballY > paddle2Y & pongballY < (paddle2Y + YH) & touchcheck == false) {
             pongballX = -pongballX;
+            touchcheck = true;
         }
 
-        if (pongballX < width+20 & pongballY > paddle1Y & pongballY < (paddle1Y + YH)) {
+        //Player 1 returnball
+        if (pongballX < paddle1X & pongballY > paddle1Y & pongballY < (paddle1Y + YH) & touchcheck == true) {
             pongballX = -pongballX;
+            touchcheck = false;
         }
 
     }
@@ -179,9 +193,19 @@ public class Grafik extends Canvas implements Runnable{
         public void keyPressed(KeyEvent keyEvent) {
             if (keyEvent.getKeyChar() == 'w') {
                 paddle1VY = -5;
+                System.out.println(paddle1VY);
             }
             if (keyEvent.getKeyChar() == 's') {
                 paddle1VY = 5;
+                System.out.println(paddle1VY);
+            }
+            if (keyEvent.getKeyChar() == 'o') {
+                paddle2VY = -5;
+                System.out.println(paddle1VY);
+            }
+            if (keyEvent.getKeyChar() == 'l') {
+                paddle2VY = 5;
+                System.out.println(paddle1VY);
             }
         }
 
@@ -193,47 +217,12 @@ public class Grafik extends Canvas implements Runnable{
             if (keyEvent.getKeyChar() == 's') {
                 paddle1VY = 0;
             }
-        }
-    }
-
-    private class ML implements MouseListener {
-
-        @Override
-        public void mouseClicked(MouseEvent mouseEvent) {
-
-        }
-
-        @Override
-        public void mousePressed(MouseEvent mouseEvent) {
-
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent mouseEvent) {
-
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent mouseEvent) {
-
-        }
-
-        @Override
-        public void mouseExited(MouseEvent mouseEvent) {
-
-        }
-    }
-
-    private class MML implements MouseMotionListener {
-
-        @Override
-        public void mouseDragged(MouseEvent mouseEvent) {
-
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent mouseEvent) {
-
+            if (keyEvent.getKeyChar() == 'o') {
+                paddle2VY = 0;
+            }
+            if (keyEvent.getKeyChar() == 'l') {
+                paddle2VY = 0;
+            }
         }
     }
 }
